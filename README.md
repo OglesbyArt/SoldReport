@@ -1,0 +1,110 @@
+SoldReport
+==========
+package artpricingsystem;
+import java.io.*;
+import java.util.*;
+import java.util.Comparator;
+        
+public class SoldReport {      
+    public static int lineCount;
+    public static void printReport ()
+    {
+        double totalActualSellingPrice=0;
+        double totalTargetSellingPrice=0;
+        int count=0;
+        try
+        {
+            //sortFile();
+            SoldPainting tempPainting = new SoldPainting();
+            File  paintingFile = new File ("GalleryPaintings.dat");
+            
+            if (paintingFile.exists())
+            {
+                RandomAccessFile inFile = new RandomAccessFile (paintingFile, "r");
+                while (inFile.getFilePointer()!=inFile.length())
+                {
+                    if (((lineCount%20) == 0) && (lineCount!=0))
+                    {
+                        printRecord(tempPainting);
+                        totalActualSellingPrice+=tempPainting.getActualSellingPrice();
+                        totalTargetSellingPrice+=tempPainting.getTargetSellingPrice();
+                        count++;
+                        UserInterface.clearScreen();
+                        printHeader();
+
+                    }
+                    if ((lineCount%20) == 0)
+                    {
+                        UserInterface.clearScreen();
+                        printHeader();
+                    }
+                    tempPainting.read (inFile);
+                    printRecord(tempPainting);
+                    totalActualSellingPrice+=tempPainting.getActualSellingPrice();
+                    totalTargetSellingPrice+=tempPainting.getTargetSellingPrice();
+                    count++;
+                    
+                }
+                inFile.close ();
+                computeRatio(totalActualSellingPrice, totalTargetSellingPrice, count);
+                count=0;
+            }
+            else
+            {
+              System.out.println ("\nNo Paintings have been sold in the past year.");
+            }
+
+            System.out.println("Press <ENTER> to return to Main Menu");
+            UserInterface.pressEnter();
+
+        }
+        catch (Exception e)
+        {
+            System.out.println ("***** Error: SoldReport.printReport () *****");
+            System.out.println ("\t" + e);
+        }
+    } 
+    
+    public static void printRecord (SoldPainting b)
+    {
+        Date today=new Date();
+        Calendar calendar = Calendar.getInstance();
+        int lastYear=calendar.get(Calendar.YEAR)-1;
+        int thisMonth=calendar.get(Calendar.MONTH)+1;
+        int thisDay=calendar.get(Calendar.DAY_OF_MONTH);
+        String ytd=thisMonth+"/"+thisDay+"/"+lastYear;
+        Date lowerbound = new Date (ytd);
+        if(b.dateOfSale.after(lowerbound))
+        {    
+            System.out.printf ("%-25s%-35s%-25s%-45s%-35s%-30s", b.classification, b.dateOfSale, b.artistLastName, b.titleOfWork, b.targetSellingPrice, b.actualSellingPrice);
+            if(b.actualSellingPrice>b.targetSellingPrice)
+                System.out.printf ("%-35s\n", true);  
+            else System.out.printf ("%-35s\n",false);  
+            ++lineCount;
+        }
+    }
+    
+    public static void printHeader()
+    {
+        System.out.println ("\t\t\t\t\t       Produce Paintings Sold in the Past Year Report       \n");
+        System.out.printf ("%-25s%-35s%-25s%-45s%-35s%-30s%-35s\n", "Classification Type", "Sale Date", "Artist Last Name", "Title of Work", "Target Selling Price", "Actual Selling Price", "Actual Price > Target Price Flag");
+        System.out.println ("----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+        lineCount+=4;
+    }
+    
+    public static void computeRatio(double actual, double target, int count)
+    {
+        double actualavg=actual/count;
+        actualavg=Math.round(actualavg*100);
+        actualavg=actualavg/100;
+        System.out.print("\n\nThe average Actual Purchase Price is: $" + actualavg+ "\t\t");
+        double targetavg=target/count;
+        targetavg=Math.round(target*100);
+        targetavg=target/100;
+        System.out.print("The average Suggested Maximum Purchase Price is: $"+targetavg + "\t\t");
+        double ratio=actualavg/targetavg;
+        ratio=Math.round(ratio*100);
+        ratio=ratio/100;
+        System.out.println("The average ratio of the Actual Selling Price to the Target Selling Price is: " + ratio+"\n");
+    }
+}
