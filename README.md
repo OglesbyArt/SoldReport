@@ -1,5 +1,3 @@
-SoldReport
-==========
 package artpricingsystem;
 import java.io.*;
 import java.util.*;
@@ -25,24 +23,31 @@ public class SoldReport {
                 {
                     if (((lineCount%20) == 0) && (lineCount!=0))
                     {
-                        printRecord(tempPainting);
-                        totalActualSellingPrice+=tempPainting.getActualSellingPrice();
-                        totalTargetSellingPrice+=tempPainting.getTargetSellingPrice();
-                        count++;
+                        //printRecord(tempPainting);
+                        //totalActualSellingPrice+=tempPainting.getActualSellingPrice();
+                        //totalTargetSellingPrice+=tempPainting.getTargetSellingPrice();
+                        //count++;
                         UserInterface.clearScreen();
                         printHeader();
 
                     }
                     if ((lineCount%20) == 0)
                     {
-                        UserInterface.clearScreen();
                         printHeader();
                     }
-                    tempPainting.read (inFile);
-                    printRecord(tempPainting);
-                    totalActualSellingPrice+=tempPainting.getActualSellingPrice();
-                    totalTargetSellingPrice+=tempPainting.getTargetSellingPrice();
-                    count++;
+                    tempPainting.read (inFile);//need to find out if Bought or sold painting before this statement to stop erro
+                    double isSold=tempPainting.getActualSellingPrice();
+                    if(isSold!=0)
+                    {
+                        boolean printed=printRecord(tempPainting);
+                        if(printed)
+                        {
+                            totalActualSellingPrice+=tempPainting.getActualSellingPrice();
+                            totalTargetSellingPrice+=tempPainting.getTargetSellingPrice();
+                            count++;
+                        }
+                        
+                    }
                     
                 }
                 inFile.close ();
@@ -58,14 +63,16 @@ public class SoldReport {
             UserInterface.pressEnter();
 
         }
+ 
         catch (Exception e)
         {
             System.out.println ("***** Error: SoldReport.printReport () *****");
             System.out.println ("\t" + e);
         }
     } 
-    
-    public static void printRecord (SoldPainting b)
+
+
+    public static boolean printRecord (SoldPainting b)
     {
         Date today=new Date();
         Calendar calendar = Calendar.getInstance();
@@ -81,7 +88,9 @@ public class SoldReport {
                 System.out.printf ("%-35s\n", true);  
             else System.out.printf ("%-35s\n",false);  
             ++lineCount;
+            return true;
         }
+        return false;
     }
     
     public static void printHeader()
@@ -97,11 +106,11 @@ public class SoldReport {
         double actualavg=actual/count;
         actualavg=Math.round(actualavg*100);
         actualavg=actualavg/100;
-        System.out.print("\n\nThe average Actual Purchase Price is: $" + actualavg+ "\t\t");
+        System.out.print("\n\nThe average Actual Selling Price is: $" + actualavg+ "\t\t");
         double targetavg=target/count;
         targetavg=Math.round(target*100);
-        targetavg=target/100;
-        System.out.print("The average Suggested Maximum Purchase Price is: $"+targetavg + "\t\t");
+        targetavg=targetavg/100;
+        System.out.print("The average Target Selling Price is: $"+targetavg + "\t\t");
         double ratio=actualavg/targetavg;
         ratio=Math.round(ratio*100);
         ratio=ratio/100;
