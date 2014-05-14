@@ -23,19 +23,14 @@ public class SoldReport {
                 {
                     if (((lineCount%20) == 0) && (lineCount!=0))
                     {
-                        //printRecord(tempPainting);
-                        //totalActualSellingPrice+=tempPainting.getActualSellingPrice();
-                        //totalTargetSellingPrice+=tempPainting.getTargetSellingPrice();
-                        //count++;
-                        UserInterface.clearScreen();
+                        System.out.println("\n\n\n\n");
                         printHeader();
-
                     }
                     if ((lineCount%20) == 0)
                     {
                         printHeader();
                     }
-                    tempPainting.read (inFile);//need to find out if Bought or sold painting before this statement to stop erro
+                    tempPainting.read (inFile);
                     double isSold=tempPainting.getActualSellingPrice();
                     if(isSold!=0)
                     {
@@ -46,19 +41,17 @@ public class SoldReport {
                             totalTargetSellingPrice+=tempPainting.getTargetSellingPrice();
                             count++;
                         }
-                        
                     }
-                    
                 }
                 inFile.close ();
                 computeRatio(totalActualSellingPrice, totalTargetSellingPrice, count);
-                count=0;
+                
             }
             else
             {
               System.out.println ("\nNo Paintings have been sold in the past year.");
             }
-
+            count=0;
             System.out.println("Press <ENTER> to return to Main Menu");
             UserInterface.pressEnter();
 
