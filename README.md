@@ -101,7 +101,7 @@ public class SoldReport {
         actualavg=actualavg/100;
         System.out.print("\n\nThe average Actual Selling Price is: $" + actualavg+ "\t\t");
         double targetavg=target/count;
-        targetavg=Math.round(target*100);
+        targetavg=Math.round(targetavg*100);
         targetavg=targetavg/100;
         System.out.print("The average Target Selling Price is: $"+targetavg + "\t\t");
         double ratio=actualavg/targetavg;
