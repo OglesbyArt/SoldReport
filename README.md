@@ -12,7 +12,7 @@ public class SoldReport {
         int count=0;
         try
         {
-            //sortFile();
+            sortFile();
             SoldPainting tempPainting = new SoldPainting();
             File  paintingFile = new File ("GalleryPaintings.dat");
             
@@ -108,5 +108,50 @@ public class SoldReport {
         ratio=Math.round(ratio*100);
         ratio=ratio/100;
         System.out.println("The average ratio of the Actual Selling Price to the Target Selling Price is: " + ratio+"\n");
+    }
+    
+    public static void sortFile() 
+    {
+       try{
+           List<SoldPainting> bp= new ArrayList<SoldPainting>();
+           File paintingsFile = new File ("GalleryPaintings.dat");
+           File  tempPaintingsFile = new File ("Reports.dat");
+           tempPaintingsFile.delete();
+           RandomAccessFile oldFile = new RandomAccessFile (paintingsFile, "r");
+           //Reads in File to Array 
+           while (oldFile.getFilePointer () != oldFile.length ()) 
+           {
+                SoldPainting tempPainting = new SoldPainting ();
+                tempPainting.read(oldFile);
+                bp.add(tempPainting);
+           } 
+           oldFile.close ();
+           //Sorts the Array
+           Collections.sort(bp,new Comparator<SoldPainting>() {
+           @Override
+            public int compare(SoldPainting  bp1, SoldPainting  bp2)
+            {
+                int result=bp1.getClassification().compareTo(bp2.getClassification());
+                if(result!=0)
+                     return result;
+                else if (result==0)    
+                    result=bp1.getDateOfSale().compareTo(bp2.getDateOfSale());
+                return result;
+            }
+            });
+           //Writes Array to File
+           RandomAccessFile newFile = new RandomAccessFile (tempPaintingsFile, "rw");
+            for(int j=0;j<bp.size();++j) 
+            {
+                SoldPainting tempPainting = new SoldPainting ();
+                tempPainting=bp.get(j);
+                tempPainting.write(newFile);
+            }
+       }
+       catch (Exception e)
+        {
+            System.out.println ("***** Error: SoldReport.sortFile () *****");
+            System.out.println ("\t" + e);
+        }
     }
 }
